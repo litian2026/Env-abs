@@ -30,7 +30,7 @@ action-response histories for physical deployment.
 ## Repository structure
 
 ```text
-Source_code/
+Env-abs/
 |-- Interaction cue/
 |   |-- Generate_perception_data_new.py
 |   `-- Model_estimation_patt.py
