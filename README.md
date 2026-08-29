@@ -48,7 +48,7 @@ Env-abs/
 |   |   |-- Generate_static_expert_dataset.py
 |   |   |-- Pretrain_static_policy.py
 |   |   `-- Train_navigation_policy.py
-|   `-- README.md
+|   
 `-- README.md
 ```
 
