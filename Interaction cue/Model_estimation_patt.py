@@ -367,11 +367,6 @@ def main():
     print("Features: [pitch, sin_yaw, cos_yaw, relative_x, relative_y]")
     print("targets: [wind_x, wind_y]")
     batch_size, seq_len, feature_dim = data.shape
-    data_2d = data.reshape(-1, feature_dim)
-    targets_2d = targets.reshape(-1, 2)
-
-     
-    batch_size, seq_len, feature_dim = data.shape
     
     split_idx1 = int(0.70 * len(data))
     split_idx2 = int(0.85 * len(data))
