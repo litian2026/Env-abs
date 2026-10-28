@@ -370,25 +370,77 @@ def main():
     data_2d = data.reshape(-1, feature_dim)
     targets_2d = targets.reshape(-1, 2)
 
+     
+    batch_size, seq_len, feature_dim = data.shape
+    
+    split_idx1 = int(0.70 * len(data))
+    split_idx2 = int(0.85 * len(data))
+    
+    train_data = data[:split_idx1]
+    train_targets = targets[:split_idx1]
+    
+    val_data = data[split_idx1:split_idx2]
+    val_targets = targets[split_idx1:split_idx2]
+    
+    test_data = data[split_idx2:]
+    test_targets = targets[split_idx2:]
+    
+    # Fit scalers using the training set only
     scaler_x = StandardScaler()
     scaler_y = StandardScaler()
-
-    data_scaled = scaler_x.fit_transform(data_2d).reshape(batch_size, seq_len, feature_dim)
-    targets_scaled = scaler_y.fit_transform(targets_2d)
-    split_idx1 = int(0.7 * len(data))  
-    split_idx2 = int(0.85 * len(data))  
-    train_x = torch.tensor(data_scaled[:split_idx1])
-    train_y = torch.tensor(targets_scaled[:split_idx1])
-    val_x = torch.tensor(data_scaled[split_idx1:split_idx2])
-    val_y = torch.tensor(targets_scaled[split_idx1:split_idx2])
-    test_x = torch.tensor(data_scaled[split_idx2:])
-    test_y = torch.tensor(targets_scaled[split_idx2:])
+    
+    scaler_x.fit(train_data.reshape(-1, feature_dim))
+    scaler_y.fit(train_targets.reshape(-1, 2))
+    
+    # Transform training, validation and test sets with the same scalers
+    train_x_scaled = scaler_x.transform(
+        train_data.reshape(-1, feature_dim)
+    ).reshape(train_data.shape)
+    
+    val_x_scaled = scaler_x.transform(
+        val_data.reshape(-1, feature_dim)
+    ).reshape(val_data.shape)
+    
+    test_x_scaled = scaler_x.transform(
+        test_data.reshape(-1, feature_dim)
+    ).reshape(test_data.shape)
+    
+    train_y_scaled = scaler_y.transform(train_targets.reshape(-1, 2))
+    val_y_scaled = scaler_y.transform(val_targets.reshape(-1, 2))
+    test_y_scaled = scaler_y.transform(test_targets.reshape(-1, 2))
+    
+  
+    train_x = torch.tensor(train_x_scaled, dtype=torch.float32)
+    train_y = torch.tensor(train_y_scaled, dtype=torch.float32)
+    
+    val_x = torch.tensor(val_x_scaled, dtype=torch.float32)
+    val_y = torch.tensor(val_y_scaled, dtype=torch.float32)
+    
+    test_x = torch.tensor(test_x_scaled, dtype=torch.float32)
+    test_y = torch.tensor(test_y_scaled, dtype=torch.float32)
+    
+   
     train_dataset = TensorDataset(train_x, train_y)
     val_dataset = TensorDataset(val_x, val_y)
     test_dataset = TensorDataset(test_x, test_y)
-    train_loader = DataLoader(train_dataset, batch_size=128, shuffle=True)
-    val_loader = DataLoader(val_dataset, batch_size=128)
-    test_loader = DataLoader(test_dataset, batch_size=128)
+    
+    train_loader = DataLoader(
+        train_dataset,
+        batch_size=128,
+        shuffle=True,
+    )
+    
+    val_loader = DataLoader(
+        val_dataset,
+        batch_size=128,
+        shuffle=False,
+    )
+    
+    test_loader = DataLoader(
+        test_dataset,
+        batch_size=128,
+        shuffle=False,
+    )
     input_dim = 5  
     d_model = 256
     n_heads =  4
