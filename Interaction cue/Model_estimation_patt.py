@@ -379,15 +379,13 @@ def main():
     
     test_data = data[split_idx2:]
     test_targets = targets[split_idx2:]
-    
-    # Fit scalers using the training set only
+ 
     scaler_x = StandardScaler()
     scaler_y = StandardScaler()
     
     scaler_x.fit(train_data.reshape(-1, feature_dim))
     scaler_y.fit(train_targets.reshape(-1, 2))
     
-    # Transform training, validation and test sets with the same scalers
     train_x_scaled = scaler_x.transform(
         train_data.reshape(-1, feature_dim)
     ).reshape(train_data.shape)
